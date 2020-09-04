@@ -1,0 +1,78 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+  <script>
+    $(document).ready(function(){
+      $('#form').submit(function(e){
+        e.preventDefault()
+      })
+      $('#search').keyup(function(e){
+        e.preventDefault()
+        $.ajax({
+          url: '/users/getuser', /* Where should this go? */
+          method: 'post', /* Which HTTP verb? */
+          data: $(this).parent().parent().serialize(), /* Any data to send along? */
+          success: function(serverResponse) { /* What code should we run when the server responds? */
+            $('tbody').html("")
+            $('tbody').html(serverResponse)
+
+          }
+        })
+      });
+    });
+  </script>
+  <div id="usertable">
+    <form action="/users/getuser" id="form1" style="margin-top: 20px;" method="POST">
+      {% csrf_token %}
+      <div class="form-group form-control">
+        <label for="search">Search Users: </label>
+        <input type="text" name="search" id="search" class="form-control">
+      </div>
+    </form>
+    <table class="table">
+      <thead>
+        <tr>
+          {%if current.user_level > 0 %}
+          <th>id</th>
+          <th>Email:</th>
+          {%endif%}
+          <th></th>
+          <th>Name:</th>
+          <th>Current @:</th>
+          <th>Backup @:</th>
+          <th>Followers:</th>
+          <th>Actions:</th>
+        </tr>
+      </thead>
+      <tbody>
+      {%for i in users%}
+      <tr>
+        {%if current.user_level > 0 %}
+        <td>{{i.id}}</td>
+        <td>{{i.email}}</td>
+        {%endif%}
+        <td><img src={{i.image.url}} class="smol"></td>
+        <td>{{i.first_name}}</td>
+        <td>{{i.current}}{%if i.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</td>
+        <td>{{i.backup}}</td>
+        <td>{{i.num_followers}}</td>
+        <td>
+          <div class="buttons2">
+            <a href="/users/{{i.id}}">Show</a>
+            {%if current.user_level > 0 %}
+            <a href="/users/{{i.id}}/edit">Edit</a>
+            <a href="/users/{{i.id}}/delete">Delete</a>
+            {%endif%}
+          </div>  
+        </td>
+      </tr>
+      {%endfor%}
+      </tbody>
+    </table>
+    {% if current.user_level > 0 %}
+    <div class="buttons">
+      <a href="/users/create"><button class="btn btn-default green">Create User</button></a>
+    </div>
+    {%endif%}
+  </div>
+{% endblock%}

@@ -1,0 +1,22 @@
+{%for i in users%}
+<tr>
+{%if current.user_level > 0 %}
+<td>{{i.id}}</td>
+<td>{{i.email}}</td>
+{%endif%}
+<td><img src={{i.image.url}} class="smol"></td>
+<td>{{i.first_name}}</td>
+<td>{{i.current}}{%if i.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</td>
+<td>{{i.backup}}</td>
+<td>{{i.num_followers}}</td>
+<td>
+    <div class="buttons2">
+    <a href="/users/{{i.id}}">Show</a>
+    {%if current.user_level > 0 %}
+    <a href="/users/{{i.id}}/edit">Edit</a>
+    <a href="/users/{{i.id}}/delete">Delete</a>
+    {%endif%}
+    </div>  
+</td>
+</tr>
+{%endfor%}

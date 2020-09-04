@@ -1,0 +1,196 @@
+{% extends 'register/base.html' %} {% block content %}
+<script>
+    $(document).ready(function () {
+        $('#container').on('click', 'p', function () {
+            if ($(this).siblings('.commentbox').is(':hidden')) {
+                $(this).siblings('.commentbox').slideDown();
+            }
+            else {
+                $(this).siblings('.commentbox').slideUp();
+            }
+        });
+        $('#form1').submit(function (e) {
+            e.preventDefault()
+            if ($('#messagebox').val()== ""){
+                $('.empty').remove()
+                $('#messagebox').after('<p class="empty">Message cannot be empty!</p>')
+            }
+            else {
+                $.ajax({
+                    method: "POST",
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response, data) {
+                        $('#update').after(response);
+                        $('textarea').val('')
+                        $('.empty').remove()
+                        $('.modal').modal('toggle');
+                    }
+                })
+            }
+        });
+        $('#container').on('submit', '.message .deletemessage', function (e) {
+            e.preventDefault()
+            $.ajax({
+                method: "POST",
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('.message').filter(function () { return this.id == response }).remove();
+                }
+            })
+        });
+        $('#container').on('submit', '#update', function (e) {
+            $('#update').append("<input type='hidden' name='lastmessage' value='" + $(".message").first().attr('id') + "'>")
+            e.preventDefault()
+            $.ajax({
+                method: "POST",
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('#update').after(response)
+                }
+            })
+        });
+        $('#container').on('submit', '#more', function (e) {
+            $('#more').append("<input type='hidden' name='lastmessage' value='" + $(".message").last().attr('id') + "'>")
+            e.preventDefault()
+            $.ajax({
+                method: "POST",
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('#more').before(response)
+                }
+            })
+        });
+        $('#container').on('submit', '.commentform', function (e) {
+            e.preventDefault()
+            var message_id = $(this).attr('mid');
+            if ($(this).children().children(".commentarea").val()==""){
+                $('.emp').remove()
+                $(this).children().children(".commentarea").after('<p class="emp">Comment cannot be empty!</p>')
+            }
+            else {
+                $.ajax({
+                    method: "POST",
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        var message = $('.message').filter(function () { return this.id == message_id })
+                        $(response).insertBefore(message.children().last())
+                        $('textarea').val('')
+                        $('.emp').remove()
+
+                    }
+                })
+            }
+        });
+        $('#container').on('submit', '.deletecomment', function (e) {
+            e.preventDefault()
+            $.ajax({
+                method: "POST",
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (response) {
+                    $('.comment').filter(function () { return this.id == response }).remove();
+                }
+            })
+        });
+    });
+</script>
+<div id="postmessage" data-toggle="modal" data-target="#MyModal">
+    <button class="btn btn-default green">Post a message</button>
+</div>
+<div id="container">
+    <form action="/users/update" id="update">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-default green" style="width: 100%; margin-top: 2%;">Get new posts</button>
+    </form>
+
+
+    {%if isfollowing%} {%for i in mymessages%}
+    <div class="message" id="{{i.id}}" time='{{i.updated_at}}'>
+        <a href="/users/{{i.poster.id}}">
+            <img src={{i.poster.image.url}} class="smol">
+            <h4>{{i.poster.first_name}} @{{i.poster.current}}{%if i.poster.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</h4>
+        </a>{% if i.poster.id != i.page.id%}
+        <a href="/users/{{i.page.id}}">
+            <img src={{i.page.image.url}} class="smol">
+            <h4> to {{i.page.first_name}} @{{i.page.current}}{%if i.page.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</h4>
+        </a>{%endif%}
+        <h5>on {{i.created_at}}</h5>
+        {%if request.session.id == i.poster.id%}
+        <form action="/users/{{i.page.id}}/deletemessage" method="post" class="deletemessage">
+            {% csrf_token %}
+            <input type="hidden" name='message_id' value="{{i.id}}">
+            <button type="submit" class="btn btn-default delete"><i class="fa fa-trash"></i></button>
+        </form>
+        {%endif%}
+       
+        <p>{{i.text}}</p>
+        
+
+        {% for j in comments%} {% if j.message_id == i.id%}
+        <div class="comment" id="c{{j.id}}">
+            <a href="/users/{{j.poster.id}}">
+                <img src={{j.poster.image.url}} class="smol">
+                <h4>{{j.poster.first_name}} @{{j.poster.current}}{%if j.poster.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</h4>
+            </a>
+            <h5>on {{j.created_at}}</h5>
+            {%if request.session.id == j.poster.id%}
+            <form action="/users/{{j.page.id}}/deletecomment" method="post" class="deletecomment">
+                {% csrf_token %}
+                <input type="hidden" name='comment_id' value="{{j.id}}">
+                <button type="submit" class="btn btn-default delete"><i class="fa fa-trash"></i></button>
+            </form>
+            {%endif%}
+            <p>{{j.text}}</p>
+        </div>
+        {%endif%} {%endfor%}
+        <div class="commentbox">
+            <form action="/users/{{i.page.id}}/comment" method="post" class="commentform" mid="{{i.id}}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="hidden" name='message_id' value="{{i.id}}">
+                    <label for="comment">Post a comment</label>
+                    <textarea class="form-control commentarea" rows="3" name="commentbox"></textarea>
+
+                </div>
+                <button type="submit" class="btn btn-default commentbutton">Post a comment</button>
+            </form>
+        </div>
+    </div>
+    {%endfor%}
+    <form action="/users/more" id="more">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-default green" style="width: 100%; margin-top: 2%;">Get older posts</button>
+    </form>
+    {%else%}
+    <a href="/users">
+        <h2 style="text-align: center; margin-top: 10%">Not following anyone? Click here to find frens!</h2>
+    </a>
+    {%endif%}
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="MyModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Post a message</h5>
+
+            </div>
+            <form action="/users/{{request.session.id}}/message" id="form1" method="post">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea class="form-control" rows="4" id="messagebox" name="messagebox"></textarea>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="submit" form="form1" class="btn btn-default green">Post a message</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

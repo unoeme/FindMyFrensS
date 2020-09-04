@@ -1,0 +1,8 @@
+*.pyc
+venv/
+*.sqlite3
+*.pem
+
+__pycache__/
+.vscode
+AWS.txt

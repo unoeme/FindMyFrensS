@@ -1,0 +1,82 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+        <div class="userbox">
+        <form action="/users/createuser" method="POST" id="myform">
+        {% csrf_token %}
+        <table class="table">
+            <tr>
+                <td>Name: </td>
+                <td><input type="text" name="first_name"></td>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'first_name' in message.tags %}
+                        <p>{{ message}}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tr>
+            <tr>
+                <td>Current @: </td>
+                <td><input type="text" name="current"></td>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'current' in message.tags %}
+                        <p>{{ message}}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tr>
+            <tr>
+                <td>Backup: </td>
+                <td><input type="text" name="backup"></td>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'backup' in message.tags %}
+                        <p>{{ message}}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tr>
+            <tr>
+                <td>Email: </td>
+                <td><input type="text" name="email"></td>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'email' in message.tags %}
+                        <p>{{ message}}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tr>
+            <tr>
+                <td>Password: </td>
+                <td><input type="text" name="password"></td>
+            </tr>
+            <tr>
+                <td>Confirm Password: </td>
+                <td><input type="text" name="passconfirm"></td>
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'password' in message.tags %}
+                        <p>{{ message}}</p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </tr>
+            <tr>
+                <td>Admin: </td>
+                <td><select name="user_level">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select></td>
+            </tr>
+         
+        </table>
+        </form> 
+        <div class="buttons">
+            <button type="submit" form="myform" class="btn btn-default yellowbutton" style="margin: 20px">Create</button>
+            <a href="/users"><button class="btn btn-default green" style="margin: 20px">Go Back</button></a>
+        </div>
+        </div>
+{%endblock%}

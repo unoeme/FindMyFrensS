@@ -1,0 +1,21 @@
+{% extends 'register/base.html' %}
+
+{% block content %}
+    {%if followers%}
+    {%for i in followers%}
+    <div class="follows">
+
+        <a href="/users/{{i.follower.id}}"><img src={{i.follower.image.url}} class="smol"><h4>{{i.follower.first_name}} @{{i.follower.current}}{%if i.follower.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</h4></a>
+        <p>{{i.follower.description}}</p>
+    </div>
+    {%endfor%}
+    {%endif%}
+    {%if followings%}
+    {%for i in followings%}
+    <div class="follows">
+        <a href="/users/{{i.following.id}}"><img src={{i.following.image.url}} class="smol"><h4>{{i.following.first_name}} @{{i.following.current}}{%if i.following.verified > 0 %}<img class="smol2" src="/media/check.png" >{%endif%}</h4></a>
+        <p>{{i.following.description}}</p>
+    </div>
+    {%endfor%}
+    {%endif%}
+{% endblock %}

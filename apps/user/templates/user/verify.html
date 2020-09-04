@@ -1,0 +1,24 @@
+{% extends 'register/base.html' %} {% block content %}
+<div class="userbox">
+    <form action="/users/{{user.id}}/verifytest" method="POST" id="myform">
+        <h4>Post a tweet from your current @{{user.current}} saying: Verify me on Find My Frens!</h4>
+        {% csrf_token %}
+        <table class="table">
+            <tr>
+                <td>Link to Tweet: </td>
+                <td>
+                    <textarea name="tweet" cols="30" rows="5"></textarea>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+    <div class="buttons">
+        <a href="/users/{{user.id}}">
+            <button class="btn btn-default green" style="margin: 20px">Go Back</button>
+        </a>
+        <button type="submit" form="myform" class="btn btn-default yellowbutton" style="margin: 20px">Verify</button>
+    </div>
+    <h4>If verification is succesful you will have a blue checkmark next to your current @</h4>
+</div>
+{%endblock%}

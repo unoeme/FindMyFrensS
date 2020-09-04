@@ -1,0 +1,111 @@
+{% extends 'register/base.html' %} {% block content %}
+<div class="userbox">
+    <form action="/users/{{user.id}}/update" method="POST" id="myform">
+        {% csrf_token %}
+        <table class="table">
+            <tr>
+                <td>First Name: </td>
+                <td>
+                    <input type="text" name="first_name" value="{{user.first_name}}">
+                </td>
+            </tr>
+            <tr>
+                <td>Current: </td>
+                <td>
+                    <input type="text" name="current" value="{{user.current}}">
+                </td>
+            </tr>
+            <tr>
+                <td>Backup: </td>
+                <td>
+                    <input type="text" name="backup" value="{{user.backup}}">
+                </td>
+            </tr>
+            <tr>
+                <td>Email: </td>
+                <td>
+                    <input type="text" name="email" value="{{user.email}}">
+                </td>
+            </tr>
+            <tr>
+                <td>Bio: </td>
+                <td>
+                    <textarea name="description" cols="30" rows="5">{{user.description}}</textarea>
+                </td>
+            </tr>
+            {% if messages %} {% for message in messages %}
+            <p>{{ message}}</p>
+            {% endfor %} {% endif %}
+        </table>
+    </form>
+    <div class="buttons">
+        <a href="/users/{{user.id}}">
+            <button class="btn btn-default green" style="margin: 20px">Go Back</button>
+        </a>
+        <a href="/users/{{user.id}}/delete">
+            <button class="btn btn-default delete" style="margin: 20px">Delete Account</button>
+        </a>
+        <button type="submit" form="myform" class="btn btn-default yellowbutton" style="margin: 20px">Save</button>
+
+    </div>
+    <form action="/users/{{user.id}}/updatepassword" method="POST" id="myform2">
+        {% csrf_token %}
+
+        <table class="table">
+            <tr>
+                <td>Change Password: </td>
+                <td>
+                    <input type="password" name="password">
+                </td>
+            </tr>
+            <tr>
+                <td>Confirm Password: </td>
+                <td>
+                    <input type="password" name="passconfirm">
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="buttons">
+        <a href="/users/{{user.id}}">
+            <button class="btn btn-default green" style="margin: 20px">Go Back</button>
+        </a>
+        <button type="submit" form="myform2" class="btn btn-default yellowbutton" style="margin: 20px">Save</button>
+
+    </div>
+    {%if current.user_level > 0 %}
+    <form action="/users/{{user.id}}/makeadmin" method="POST" id="myform3">
+        {% csrf_token %}
+        <table class="table">
+            <td>Make Admin? </td>
+            <td>
+                <select name="user_level">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </td>
+        </table>
+    </form>
+    <div class="buttons">
+        <button type="submit" form="myform3" class="btn btn-default delete" style="margin: 20px">Accept</button>
+    </div>
+    {% endif %}
+    {%if current.user_level > 0 %}
+    <form action="/users/{{user.id}}/verify" method="POST" id="myform4">
+        {% csrf_token %}
+        <table class="table">
+            <td>Verify? </td>
+            <td>
+                <select name="verified">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </td>
+        </table>
+    </form>
+    <div class="buttons">
+        <button type="submit" form="myform4" class="btn btn-default delete" style="margin: 20px">Accept</button>
+    </div>
+    {% endif %}
+</div>
+{%endblock%}
