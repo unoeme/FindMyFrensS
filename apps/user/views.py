@@ -14,8 +14,7 @@ import os
 
 # Create your views here.
 def index(request):
-    if 'id' not in request.session:
-        return redirect('/')
+   
     context = {
         'users': User.objects.all().annotate(num_followers=Count('followings')).order_by('-num_followers') [:15],
         'current': User.objects.get(id = request.session['id'])
