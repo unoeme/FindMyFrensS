@@ -23,6 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'klcs+flvuka_%htqu@vhc(jhyod!^&cw7w0ltwuk#)@+4vt=m!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
